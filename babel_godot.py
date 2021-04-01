@@ -5,7 +5,8 @@ __version__ = '1.0'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
-_godot_property_str = re.compile(r'^([A-Za-z0-9_]+)\s*=\s*([\[|"].+)$')
+_godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"].+)$')
+_godot_bus_name_property_str = re.compile(r'^bus/[0-9]+/name?')
 _godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(\\"([^\\"]+)\\"\)?')
 
 
@@ -31,7 +32,7 @@ def _godot_unquote(string):
                 result.append(c)
     return ''.join(result)
 
-def _assemble_multiline_string(lineno, line, multiline):
+def _assemble_multiline_string(line, multiline):
     to_yield = []
 
     if '", "' in line:
@@ -108,7 +109,7 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
 
         # Handle multiline strings
         if multiline['keyword']:
-            to_yield = _assemble_multiline_string(lineno, line, multiline)
+            to_yield = _assemble_multiline_string(line, multiline)
             for item in to_yield:
                 yield (lineno, item[0], [item[1]], [])
 
@@ -177,13 +178,6 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
 
     properties_to_translate = {}
     for keyword in keywords:
-        if '/' in keyword:
-            properties_to_translate[tuple(keyword.split('/', 1))] = keyword
-        else:
-            properties_to_translate[(None, keyword)] = keyword
-
-    properties_to_translate = {}
-    for keyword in keywords:
         if keyword.startswith('Resource/'):
             properties_to_translate[keyword[9:]] = keyword
         else:
@@ -200,7 +194,7 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
 
         # Handle multiline strings
         if multiline['keyword']:
-            to_yield = _assemble_multiline_string(lineno, line, multiline)
+            to_yield = _assemble_multiline_string(line, multiline)
             for item in to_yield:
                 yield (lineno, item[0], [item[1]], [])
 
@@ -208,10 +202,18 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
 
         match = _godot_property_str.match(line)
         if match:
+
             property = match.group(1)
+
+            # Convert "bus/{bus_idx}/name" to "bus_name" so audio bus names can be localized,
+            if _godot_bus_name_property_str.match(property):
+                property = "bus_name"
+
             value = match.group(2)
             keyword = check_translate_property(property)
-            if keyword:
+
+            if keyword and value != '""':
+
                 # Beginning of multiline string
                 if not value.endswith('"') and not value.endswith(']'):
                     multiline['keyword'] = keyword
