@@ -7,30 +7,39 @@ __version__ = '1.0'
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
 _godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"].+)$')
 _godot_bus_name_property_str = re.compile(r'^bus/[0-9]+/name?')
-_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(\\"([^\\"]+)\\"\)?')
+_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(\\"(.+?[^\\])\\"\)?')
 
 
 def _godot_unquote(string):
+
     if string[0] != '"' or string[-1] != '"':
         return None
+
     result = []
     escaped = False
+
     for c in string[1:-1]:
         if escaped:
             if c == '\\':
-                result.append('\\')
+                #result.append('\\')
+                continue
             elif c == 'n':
                 result.append('\n')
             elif c == 't':
                 result.append('\t')
             else:
                 result.append(c)
+
+            escaped = False
         else:
             if c == '\\':
                 escaped = True
             else:
                 result.append(c)
+
     return ''.join(result)
+
+
 
 def _assemble_multiline_string(line, multiline):
     to_yield = []
