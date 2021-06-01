@@ -144,7 +144,7 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
                 keyword = check_translate_property(property)
                 if keyword:
                     # Beginning of multiline string
-                    if not value.endswith('"') and not value.endswith(']'):
+                    if not value.endswith('"') and not value.endswith(' ]'):
                         multiline['keyword'] = keyword
                         multiline['value'] = value.strip('[ "') + '\n'
                         continue
@@ -224,7 +224,7 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
             if keyword and value != '""':
 
                 # Beginning of multiline string
-                if not value.endswith('"') and not value.endswith(']'):
+                if not value.endswith('"') and not value.endswith(' ]'):
                     multiline['keyword'] = keyword
                     multiline['value'] = value.strip('[ "') + '\n'
                     continue
