@@ -1,7 +1,7 @@
 import re
 
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
@@ -63,12 +63,13 @@ def _assemble_multiline_string(line, multiline):
         multiline['value'] = ''
         line = line_parts[-1]
 
-    if not line.endswith('"\n') and not line.endswith(']\n'):
+    if not line.endswith('"\n') and not line.endswith(' ]\n'):
         # Continuation of multiline string
         multiline['value'] += line
+
     else:
         # Multiline string ends
-        multiline['value'] += line.strip('"]\n')
+        multiline['value'] += line.strip('"\n')
 
         value = _godot_unquote('"' + multiline['value'] + '"')
         if value is not None:
