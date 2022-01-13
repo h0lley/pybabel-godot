@@ -11,7 +11,7 @@ Additional features in this fork
 
 Note that when installing via pip you'll get the original version that does not have these features.
 However, you can then manually overwrite the ``babel_godot.py`` with the one from this repo to get the full functionality.
-I've submitted pull requests for these features to the original repo too, but the maintainer doesn't seem to be active.
+I've submitted pull requests for these features to the original repo too, but the maintainer didn't merge.
 
 Installation
 ------------
