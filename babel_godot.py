@@ -63,7 +63,7 @@ def _assemble_multiline_string(line, multiline):
         multiline['value'] = ''
         line = line_parts[-1]
 
-    if not line.endswith('"\n') and not line.endswith(' ]\n'):
+    if not line.endswith('"\n') and not line.endswith(']\n'):
         # Continuation of multiline string
         multiline['value'] += line
 
@@ -145,13 +145,13 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
                 keyword = check_translate_property(property)
                 if keyword:
                     # Beginning of multiline string
-                    if not value.endswith('"') and not value.endswith(' ]'):
+                    if not value.endswith('"') and not value.endswith(']'):
                         multiline['keyword'] = keyword
                         multiline['value'] = value.strip('[ "') + '\n'
                         continue
 
                     # Handle array of strings
-                    if value.startswith('[ "'):
+                    if value.startswith('["'):
                         values = value.strip('[ "]').split('", "')
                         for value in values:
                             value = _godot_unquote('"' + value + '"')
@@ -225,13 +225,13 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
             if keyword and value != '""':
 
                 # Beginning of multiline string
-                if not value.endswith('"') and not value.endswith(' ]'):
+                if not value.endswith('"') and not value.endswith(']'):
                     multiline['keyword'] = keyword
                     multiline['value'] = value.strip('[ "') + '\n'
                     continue
 
                 # Handle array of strings
-                if value.startswith('[ "'):
+                if value.startswith('["'):
                     values = value.strip('[ "]').split('", "')
                     for value in values:
                         value = _godot_unquote('"' + value + '"')
