@@ -5,12 +5,15 @@ __version__ = '1.1'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
-_godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"].+)$')
+_godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"|&].+)$')
 _godot_bus_name_property_str = re.compile(r'^bus/[0-9]+/name?')
-_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(\\"(.+?[^\\])\\"\)?')
+_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(&?\\"(.+?[^\\])\\"\)?')
 
 
 def _godot_unquote(string):
+
+    if string[0] == '&':
+        string = string[1:]
 
     if string[0] != '"' or string[-1] != '"':
         return None
@@ -151,7 +154,7 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
                         continue
 
                     # Handle array of strings
-                    if value.startswith('["'):
+                    if value.startswith('[ "') or value.startswith('["'):
                         values = value.strip('[ "]').split('", "')
                         for value in values:
                             value = _godot_unquote('"' + value + '"')
@@ -231,7 +234,7 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
                     continue
 
                 # Handle array of strings
-                if value.startswith('["'):
+                if value.startswith('[ "') or value.startswith('["'):
                     values = value.strip('[ "]').split('", "')
                     for value in values:
                         value = _godot_unquote('"' + value + '"')
