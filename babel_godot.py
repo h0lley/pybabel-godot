@@ -1,7 +1,7 @@
 import re
 
 
-__version__ = '1.1'
+__version__ = '1.0'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
@@ -148,7 +148,7 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
                 keyword = check_translate_property(property)
                 if keyword:
                     # Beginning of multiline string
-                    if not value.endswith('"') and not value.endswith(']'):
+                    if not value.endswith('"') and not value.endswith('"]'):
                         multiline['keyword'] = keyword
                         multiline['value'] = value.strip('[ "') + '\n'
                         continue
@@ -225,10 +225,10 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
             value = match.group(2)
             keyword = check_translate_property(property)
 
-            if keyword and value != '""':
+            if keyword and value != '""' and value != "[]" and value != "[  ]": # [  ] godot 3 remnant
 
                 # Beginning of multiline string
-                if not value.endswith('"') and not value.endswith(']'):
+                if not value.endswith('"') and not value.endswith('"]'):
                     multiline['keyword'] = keyword
                     multiline['value'] = value.strip('[ "') + '\n'
                     continue

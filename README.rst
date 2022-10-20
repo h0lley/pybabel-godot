@@ -5,6 +5,7 @@ This is a plugin for `Babel <http://babel.pocoo.org/>`_, the internationalizatio
 
 Additional features in this fork
 ------------
+- Compatible with Godot 4
 - Built-in scripts (GDScript saved in scene files as sub-resource) are parsed for ``tr(...)``.
 - Arrays of strings are being included.
 - No issues with multiline strings.
@@ -14,7 +15,7 @@ Installation
 
 Install Babel and this plugin::
 
-    pip install git+https://github.com/h0lley/pybabel-godot.git#egg=babel-godot
+    pip install Babel git+https://github.com/h0lley/pybabel-godot.git#egg=babel-godot
 
 Usage
 -----
