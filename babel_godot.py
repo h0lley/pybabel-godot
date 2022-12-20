@@ -1,16 +1,19 @@
 import re
 
 
-__version__ = '1.1'
+__version__ = '2.0'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
-_godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"].+)$')
+_godot_property_str = re.compile(r'^([A-Za-z0-9_/]+)\s*=\s*([\[|"|&].+)$')
 _godot_bus_name_property_str = re.compile(r'^bus/[0-9]+/name?')
-_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(\\"(.+?[^\\])\\"\)?')
+_godot_escaped_tr = re.compile(r'^.*[^A-Za-z0-9_]tr\(&?\\"(.+?[^\\])\\"\)?')
 
 
 def _godot_unquote(string):
+
+    if string[0] == '&':
+        string = string[1:]
 
     if string[0] != '"' or string[-1] != '"':
         return None
@@ -63,7 +66,7 @@ def _assemble_multiline_string(line, multiline):
         multiline['value'] = ''
         line = line_parts[-1]
 
-    if not line.endswith('"\n') and not line.endswith(' ]\n'):
+    if not line.endswith('"\n') and not line.endswith(']\n'):
         # Continuation of multiline string
         multiline['value'] += line
 
@@ -145,13 +148,13 @@ def extract_godot_scene(fileobj, keywords, comment_tags, options):
                 keyword = check_translate_property(property)
                 if keyword:
                     # Beginning of multiline string
-                    if not value.endswith('"') and not value.endswith(' ]'):
+                    if not value.endswith('"') and not value.endswith('"]'):
                         multiline['keyword'] = keyword
                         multiline['value'] = value.strip('[ "') + '\n'
                         continue
 
                     # Handle array of strings
-                    if value.startswith('[ "'):
+                    if value.startswith('[ "') or value.startswith('["'):
                         values = value.strip('[ "]').split('", "')
                         for value in values:
                             value = _godot_unquote('"' + value + '"')
@@ -222,16 +225,16 @@ def extract_godot_resource(fileobj, keywords, comment_tags, options):
             value = match.group(2)
             keyword = check_translate_property(property)
 
-            if keyword and value != '""':
+            if keyword and value != '""' and value != "[]" and value != "[  ]": # [  ] godot 3 remnant
 
                 # Beginning of multiline string
-                if not value.endswith('"') and not value.endswith(' ]'):
+                if not value.endswith('"') and not value.endswith('"]'):
                     multiline['keyword'] = keyword
                     multiline['value'] = value.strip('[ "') + '\n'
                     continue
 
                 # Handle array of strings
-                if value.startswith('[ "'):
+                if value.startswith('[ "') or value.startswith('["'):
                     values = value.strip('[ "]').split('", "')
                     for value in values:
                         value = _godot_unquote('"' + value + '"')

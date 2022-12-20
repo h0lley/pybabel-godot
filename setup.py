@@ -4,13 +4,15 @@ from setuptools import setup
 
 
 setup(
-    name='Babel-Godot',
-    version='1.0',
-    description='Plugin for Babel to support Godot scene files (.tscn)',
+    name='Babel-Godot-4',
+    version='2.0',
+    description='Plugin for Babel to support Godot scene (.tscn) and resource (.tres) files.',
     author='Remi Rampin',
     author_email='remirampin@gmail.com',
+    maintainer='Holly',
+    maintainer_email='holly@crater.company',
     license='BSD',
-    url='https://github.com/remram44/pybabel-godot',
+    url='https://github.com/h0lley/pybabel-godot',
 
     classifiers=[
         'Development Status :: 5 - Production/Stable',
