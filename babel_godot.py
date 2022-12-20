@@ -1,7 +1,7 @@
 import re
 
 
-__version__ = '1.0'
+__version__ = '2.0'
 
 
 _godot_node = re.compile(r'^\[node name="([^"]+)" (?:type="([^"]+)")?')
