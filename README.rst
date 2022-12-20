@@ -3,8 +3,10 @@ Babel Godot plugin
 
 This is a plugin for `Babel <http://babel.pocoo.org/>`_, the internationalization library, that adds support for scene as well as resource files from the `Godot game engine <https://godotengine.org/>`_.
 
-Additional features in this fork
+About this fork
 ------------
+As this program consists of only one file which I adjusted a lot to fit the needs of my project, this fork deviates from upstream / is unlikely to be synced. Additional features in this fork are:
+
 - Compatible with Godot 4
 - Built-in scripts (GDScript saved in scene files as sub-resource) are parsed for ``tr(...)``.
 - Arrays of strings are being included.
